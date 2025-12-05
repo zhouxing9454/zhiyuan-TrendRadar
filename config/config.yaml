@@ -29,6 +29,7 @@ report:
   rank_threshold: 10 # 排名高亮阈值
   sort_by_position_first: false # 排序优先级：true=先按配置位置排序，false=先按热点条数排序
   max_news_per_keyword: 0 # 每个关键词最大显示数量，0=不限制
+  reverse_content_order: false # 内容顺序：false=热点词汇统计在前，true=新增热点新闻在前
 
 notification:
   enable_notification: true # 是否启用通知功能，如果 false，则不发送手机通知
@@ -39,6 +40,7 @@ notification:
   slack_batch_size: 4000 # Slack消息分批大小（字节）
   batch_send_interval: 3 # 批次发送间隔（秒）
   feishu_message_separator: "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" # feishu 消息分割线
+  max_accounts_per_channel: 3 # 每个渠道最大账号数量，建议不超过 3
 
   # 🕐 推送时间窗口控制（可选功能）
   # 用途：限制推送的时间范围，避免非工作时间打扰
@@ -62,6 +64,7 @@ notification:
     feishu_url: "" # 飞书机器人的 webhook URL
     dingtalk_url: "" # 钉钉机器人的 webhook URL
     wework_url: "" # 企业微信机器人的 webhook URL
+    wework_msg_type: "markdown" # 企业微信消息类型：markdown(群机器人) 或 text(个人微信应用)
     telegram_bot_token: "" # Telegram Bot Token
     telegram_chat_id: "" # Telegram Chat ID
     email_from: "" # 发件人邮箱地址
