@@ -9,7 +9,8 @@ on:
     # - "*/30 * * * *"      # 每 30 分钟执行一次
     # - "*/30 0-14 * * *"   # 每天 UTC 0:00-14:00（北京时间 8:00-22:00），每 30 分钟运行一次
     # - "0 0,6,12,18 * * *" # 每天 UTC 0:00,6:00,12:00,18:00（北京时间 8:00,14:00,20:00,次日2:00）
-    - cron: "0 * * * *"
+    # - cron: "0 * * * *"
+    - cron: "0 0,3,6,9,12 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -22,21 +23,19 @@ permissions:
 jobs:
   crawl:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 30
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          fetch-depth: 0
           clean: true
-          token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-          cache: 'pip'
           
       - name: Install dependencies
         run: |
@@ -84,6 +83,18 @@ jobs:
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
           
+          echo "🔄 Syncing with remote (branch: $BRANCH_NAME)..."
+          git fetch origin $BRANCH_NAME
+          
+          # 保存当前更改
+          git stash --include-untracked || echo "Nothing to stash"
+          
+          # 同步到远程最新
+          git reset --hard origin/$BRANCH_NAME
+          
+          # 恢复本次更改
+          git stash pop || echo "Nothing to pop"
+          
           git add -A
           
           if git diff --quiet && git diff --staged --quiet; then
@@ -101,8 +112,8 @@ jobs:
               echo "✅ Successfully pushed on attempt $i"
               exit 0
             }
-            echo "⚠️ Attempt $i failed, waiting $((i*5)) seconds..."
-            sleep $((i * 5))
+            echo "⚠️ Attempt $i failed, waiting $((i*3)) seconds..."
+            sleep $((i * 3))
           done
           
           echo "❌ Failed to push after 5 attempts"
